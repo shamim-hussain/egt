@@ -1,0 +1,19 @@
+{
+	"scheme": "zinc.svd",
+	"distributed": true,
+	"batch_size": 128,
+	"initial_lr": 0.0005,
+	"num_epochs": 600,
+	"rlr_factor": 0.5,
+	"rlr_patience": 20,
+	"min_lr_factor": 0.01,
+	"model_width": 48,
+	"edge_width": 48,
+	"model_height": 4,
+	"num_heads": 8,
+	"ffn_multiplier": 2.0,
+	"use_svd": true,
+    "sel_svd_features": 8,
+    "random_neg": true,
+	"model_name": "egt_spe_100k"
+}

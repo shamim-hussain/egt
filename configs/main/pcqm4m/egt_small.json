@@ -1,0 +1,24 @@
+{
+	"scheme": "pcqm4m.mat",
+	"distributed": true,
+	"batch_size": 128,
+	"initial_lr": 0.0002,
+	"num_epochs": 200,
+	"rlr_factor": 1.0,
+	"model_width": 512,
+	"edge_width": 128,
+	"model_height": 6,
+	"num_heads": 32,
+    "ffn_multiplier": 1.0,
+	"mlp_layers": [
+		1.0,
+		1.0
+	],
+	"num_virtual_nodes": 4,
+	"upto_hop": 16,
+	"warmup_steps": 60000,
+	"total_steps": 1000000,
+	"dropout": 0.1,
+	"edge_dropout": 0.0,
+	"model_name": "egt_small"
+}

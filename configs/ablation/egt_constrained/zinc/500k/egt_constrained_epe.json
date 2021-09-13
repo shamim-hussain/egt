@@ -1,0 +1,19 @@
+{
+	"scheme": "zinc.eig",
+	"distributed": true,
+	"batch_size": 128,
+	"initial_lr": 0.0005,
+	"num_epochs": 600,
+	"rlr_factor": 0.5,
+	"rlr_patience": 20,
+	"min_lr_factor": 0.01,
+	"model_width": 64,
+	"edge_width": 64,
+	"model_height": 10,
+	"num_heads": 8,
+	"ffn_multiplier": 2.0,
+	"use_eig": true,
+    "sel_eig_features": 8,
+	"edge_channel_type": "constrained",
+	"model_name": "egt_constrained_epe_500k"
+}

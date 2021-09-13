@@ -1,0 +1,12 @@
+/models
+/data
+/results
+/logs
+/tests
+/.sync*
+/.exclude*
+/datasets
+/benchmarking-gnns
+/*.tar.gz
+__pycache__
+.ipynb_checkpoints

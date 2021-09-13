@@ -1,0 +1,18 @@
+{
+	"scheme": "cluster.svd",
+	"distributed": true,
+	"batch_size": 128,
+	"initial_lr": 0.0005,
+	"num_epochs": 200,
+	"rlr_factor": 0.5,
+	"rlr_patience": 10,
+	"min_lr_factor": 0.01,
+	"model_width": 64,
+	"edge_width": 8,
+	"model_height": 16,
+	"num_heads": 8,
+	"ffn_multiplier": 2.0,
+	"use_svd": false,
+	"edge_channel_type": "constrained",
+	"model_name": "egt_constrained_500k"
+}
