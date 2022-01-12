@@ -1,11 +1,10 @@
 
-from os import name
+
 import tensorflow as tf
 from tensorflow.keras import layers
-from tensorflow.python.ops.gen_array_ops import transpose
 
 from ..base.track_layers import CustomLayers 
-from ..base.xformer_layers.misc import RandomNeg, RandomNegP
+from ..base.xformer_layers.misc import RandomNeg, RandomNegEig
 from ..base.graph_layers.virtual_nodes import (VirtualEdgeEmbedding, 
                                                GetVirtualNodes, 
                                                VirtualEdgeEmbedding, VirtualNodeEmbedding)
@@ -302,7 +301,7 @@ class SVDFeatModel:
             svdf_input_name    = svdf_input_name    ,
         )
         
-        custom_layers = CustomLayers(RandomNeg, RandomNegP) 
+        custom_layers = CustomLayers(RandomNeg) 
         self.tracked_layers.track_module(custom_layers)
     
 
@@ -333,18 +332,15 @@ class SVDFeatModel:
                 v = v[:,:,:sf,:]
                 if not tsvd_f:
                     v = tf.pad(v, [(0,0),(0,0),(0,pad_len),(0,0)])
-                return tf.concat(tf.unstack(v, num=2, axis=-1), axis=-1)
-            x = layers.Lambda(process_svd , name='svd_flatten')(x)
+                return v
+            x = layers.Lambda(process_svd , name='svd_process')(x)
             
             if config.random_neg:
-                if config.random_neg is True:
-                    x = layers.RandomNeg(name='random_neg')(x)
-                elif isinstance(config.random_neg, int):
-                    x = layers.RandomNegP(name='random_neg', 
-                                          num_updates=config.random_neg)(x)
-                else:
-                    raise ValueError
-                    
+                x = layers.RandomNeg(name='random_neg')(x)
+            
+            x = layers.Lambda(lambda v: tf.concat(tf.unstack(v, num=2, axis=-1), axis=-1),
+                              name='svd_flatten')(x)
+            
             if config.transform_svd:
                 x = layers.Dense(config.model_width, name='svd_emb',
                                   kernel_regularizer=self.l2reg)(x)
@@ -373,7 +369,7 @@ class EigFeatModel:
             eigf_input_name    = eigf_input_name    ,
         )
         
-        custom_layers = CustomLayers(RandomNeg, RandomNegP) 
+        custom_layers = CustomLayers(RandomNegEig) 
         self.tracked_layers.track_module(custom_layers)
     
 
@@ -408,13 +404,7 @@ class EigFeatModel:
             x = layers.Lambda(process_eig , name='eig_pad')(x)
             
             if config.random_neg:
-                if config.random_neg is True:
-                    x = layers.RandomNeg(name='random_neg')(x)
-                elif isinstance(config.random_neg, int):
-                    x = layers.RandomNegP(name='random_neg', 
-                                          num_updates=config.random_neg)(x)
-                else:
-                    raise ValueError
+                x = layers.RandomNegEig(name='random_neg')(x)
                     
             if config.transform_eig:
                 x = layers.Dense(config.model_width, name='eig_emb',

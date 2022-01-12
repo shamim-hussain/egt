@@ -59,10 +59,36 @@ class RandomNeg(tfk.layers.Layer):
             stat_shape = inputs.shape
             dyn_shape = tf.shape(inputs)
 
-            signs = tf.math.sign(tf.random.normal(shape=dyn_shape[:-1]))
-            signs.set_shape(stat_shape[:-1])
+            uniform_s = tf.random.uniform(shape  = [dyn_shape[0], 1, dyn_shape[2], 1],
+                                          minval = 0.,
+                                          maxval = 1.,
+                                          dtype  = tf.float32)
+            signs = tf.where(uniform_s < 0.5, -1., 1.)
+            signs.set_shape([stat_shape[0], 1, stat_shape[2], 1])
 
-            outputs = inputs * signs[...,None]
+            outputs = inputs * signs
+        else:
+            outputs = inputs
+        return outputs
+
+
+class RandomNegEig(tfk.layers.Layer):
+    def call(self, inputs, training=None):
+        if training is None:
+            training = tf.keras.backend.learning_phase()
+        
+        if training:
+            stat_shape = inputs.shape
+            dyn_shape = tf.shape(inputs)
+
+            uniform_s = tf.random.uniform(shape  = [dyn_shape[0], 1, dyn_shape[2]],
+                                          minval = 0.,
+                                          maxval = 1.,
+                                          dtype  = tf.float32)
+            signs = tf.where(uniform_s < 0.5, -1., 1.)
+            signs.set_shape([stat_shape[0], 1, stat_shape[2]])
+
+            outputs = inputs * signs
         else:
             outputs = inputs
         return outputs
@@ -102,14 +128,14 @@ class RandomNegP(tfk.layers.Layer):
             stat_shape = inputs.shape
             dyn_shape = tf.shape(inputs)
 
-            uniform_s = tf.random.uniform(shape  = dyn_shape[:-1],
+            uniform_s = tf.random.uniform(shape  = [dyn_shape[0], 1, dyn_shape[2], 1],
                                           minval = 0.,
                                           maxval = 1.,
                                           dtype  = tf.float32)
             signs = tf.where(uniform_s < self.inv_prob, -1., 1.)
-            signs.set_shape(stat_shape[:-1])
+            signs.set_shape([stat_shape[0], 1, stat_shape[2], 1])
 
-            outputs = inputs * signs[...,None]
+            outputs = inputs * signs
             
             new_prob = tf.minimum(self.max_prob, 
                                   self.inv_prob + (self.max_prob-self.min_prob)/self.num_updates)
