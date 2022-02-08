@@ -14,7 +14,7 @@
 	"ffn_multiplier": 2.0,
 	"use_svd": true,
     "sel_svd_features": 8,
-    "random_neg": false,
+    "random_neg": true,
 	"distance_loss": 0.05,
 	"distance_target": 3,
 	"model_name": "egt_spe_do_500k"

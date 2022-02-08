@@ -14,7 +14,7 @@
 	"ffn_multiplier": 2.0,
 	"use_svd": true,
     "sel_svd_features": 8,
-    "random_neg": false,
+    "random_neg": true,
 	"edge_channel_type": "bias",
 	"model_name": "egt_simple_spe_500k"
 }
