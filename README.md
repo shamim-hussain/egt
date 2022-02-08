@@ -1,10 +1,11 @@
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/edge-augmented-graph-transformers-global-self/graph-regression-on-pcqm4m-lsc)](https://paperswithcode.com/sota/graph-regression-on-pcqm4m-lsc?p=edge-augmented-graph-transformers-global-self)[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/edge-augmented-graph-transformers-global-self/node-classification-on-cluster)](https://paperswithcode.com/sota/node-classification-on-cluster?p=edge-augmented-graph-transformers-global-self)[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/edge-augmented-graph-transformers-global-self/graph-classification-on-mnist)](https://paperswithcode.com/sota/graph-classification-on-mnist?p=edge-augmented-graph-transformers-global-self)[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/edge-augmented-graph-transformers-global-self/node-classification-on-pattern)](https://paperswithcode.com/sota/node-classification-on-pattern?p=edge-augmented-graph-transformers-global-self)[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/edge-augmented-graph-transformers-global-self/node-classification-on-pattern-100k)](https://paperswithcode.com/sota/node-classification-on-pattern-100k?p=edge-augmented-graph-transformers-global-self)
 # Edge-augmented Graph Transformer
 ## News
-* 01/26/2022 - The **PyTorch** implementation of EGT is now available at: https://github.com/shamim-hussain/egt_pytorch. The results and hyperparameters for PCQM4Mv2, OGBG-MolPCBA, OGBG-MolHIV are also available.
+* 02/08/2022 - A new simplified tensorflow implementation which supports random masking, attention dropout and centrality scalers. For PCQM4M datasets please view the PyTorch implementation at: https://github.com/shamim-hussain/egt_pytorch.
+* 01/26/2022 - The **PyTorch** implementation of EGT is now available at: https://github.com/shamim-hussain/egt_pytorch. The results and hyperparameters for PCQM4M, PCQM4Mv2, OGBG-MolPCBA, OGBG-MolHIV are also available.
 
 ## Introduction
-This is the official implementation of the **Edge-augmented Graph Transformer (EGT)** as described in https://arxiv.org/abs/2108.03348, which augments the Transformer architecture with residual edge channels. The resultant architecture can directly process graph-structured data and acheives good results on supervised graph-learning tasks as presented by [Dwivedi et al.](https://arxiv.org/abs/2003.00982). It also achieves good performance on the large-scale [PCQM4M-LSC](https://arxiv.org/abs/2103.09430) (`0.1263 MAE` on val) dataset. EGT beats convolutional/message-passing graph neural networks on a wide range of supervised tasks and thus demonstrates that convolutional aggregation is not an essential inductive bias for graphs.
+This is the official implementation of the **Edge-augmented Graph Transformer (EGT)** as described in https://arxiv.org/abs/2108.03348, which augments the Transformer architecture with residual edge channels. The resultant architecture can directly process graph-structured data and acheives good results on supervised graph-learning tasks as presented by [Dwivedi et al.](https://arxiv.org/abs/2003.00982). It also achieves good performance on the large-scale [PCQM4M-LSC](https://arxiv.org/abs/2103.09430) (`0.1224 MAE` on val) and [PCQM4Mv2-LSC](https://arxiv.org/abs/2103.09430) (`0.0872 MAE` on test-dev) dataset. EGT beats convolutional/message-passing graph neural networks on a wide range of supervised tasks and thus demonstrates that convolutional aggregation is not an essential inductive bias for graphs.
 
 ## Requirements
 * `python >= 3.7`
@@ -14,11 +15,7 @@ This is the official implementation of the **Edge-augmented Graph Transformer (E
 * `scikit-learn >= 0.22.1`
 
 ## Download the Datasets
-For our experiments, we converted the datasets to HDF5 format for the convenience of using them without any specific library. Only the `h5py` library is required. The datasets can be downloaded from - 
-* Medium-scale datasets (GNN Benchmarking Datasets by Dwivedi et al.) : https://zenodo.org/record/5500978
-* Large-scale dataset (PCQM4M by Hu et al.) : https://zenodo.org/record/5501020
-
-Or you can simply run the provided bash scripts `download_medium_scale_datasets.sh`, `download_large_scale_datasets.sh`. The default location of the datasets is the *datasets* directory.
+For our experiments, we converted the datasets to HDF5 format for the convenience of using them without any specific library. Only the `h5py` library is required. The GNN Benchmarking Datasets by Dwivedi et al.can be downloaded from https://zenodo.org/record/5500978. Or you can simply run the provided bash script `download_medium_scale_datasets.sh`. The default location of the datasets is the *datasets* directory.
 
 ## Run Training and Evaluations
 You must create a `JSON` config file containing the configuration of a model, its training and evaluation configs (configurations). The same config file is used to do both training and evaluations.
@@ -113,9 +110,7 @@ The config file can contain many different configurations, however, the only **r
 
 
 ## Creation of the HDF5 Datasets from Scratch
-We included two Jupyter notebooks to demonstrate how the HDF5 datasets are created
-* For the medium scale datasets view `create_hdf_benchmarking_datasets.ipynb`. You will need `pytorch`, `ogb==1.1.1` and `dgl==0.4.2` libraries to run the notebook. The notebook is also runnable on Google Colaboratory.
-* For the large scale pcqm4m dataset view `create_hdf_pcqm4m.ipynb`. You will need `pytorch`, `ogb>=1.3.0` and `rdkit>=2019.03.1` to run the notebook.
+We included a Jupyter notebook to demonstrate how the HDF5 datasets are created - `create_hdf_benchmarking_datasets.ipynb`. You will need `pytorch`, `ogb==1.1.1` and `dgl==0.4.2` libraries to run the notebook. The notebook is also runnable on Google Colaboratory.
 
 ## Python Environment
 The Anaconda environment in which our experiments were conducted is specified in the `environment.yml` file.
