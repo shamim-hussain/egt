@@ -17,8 +17,10 @@ class BaseDCModelScheme(TrainingBase):
                 edge_width         = 48        ,
                 num_heads          = 8         ,
                 gate_attention     = True      ,
+                scale_degree       = False     ,
                 l2_reg             = 0         ,
                 dropout            = 0         ,
+                attn_dropout       = 0.0       ,
                 edge_dropout       = None      ,
                 mlp_layers         = [.5, .25] ,
                 edge_activation    = None      ,
@@ -28,6 +30,7 @@ class BaseDCModelScheme(TrainingBase):
                 ffn_multiplier     = 2.        ,
                 warmup_steps       = 0         ,
                 total_steps        = None      ,
+                random_mask_prob   = 0.       ,
             )
         return config_dict
     
@@ -39,6 +42,9 @@ class BaseDCModelScheme(TrainingBase):
             edge_width         = config.edge_width         ,
             num_heads          = config.num_heads          ,
             gate_attention     = config.gate_attention     ,
+            scale_degree       = config.scale_degree       ,
+            random_mask_prob   = config.random_mask_prob   ,
+            attn_dropout       = config.attn_dropout       ,
             model_height       = config.model_height       ,
             l2_reg             = config.l2_reg             ,
             node_dropout       = config.dropout            ,
@@ -49,7 +55,7 @@ class BaseDCModelScheme(TrainingBase):
             edge_channel_type  = config.edge_channel_type  ,
             edge_activation    = config.edge_activation    ,
             ffn_multiplier     = config.ffn_multiplier     ,
-            global_step_layer  = True  ,
+            global_step_layer  = True                      ,
         )
         return model_config, model_class
     

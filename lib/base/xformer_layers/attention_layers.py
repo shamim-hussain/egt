@@ -22,6 +22,7 @@ class Attention(tfk.layers.Layer):
                  return_matrix       = False,
                  headed_input        = False,
                  headed_output       = False,
+                 scale_degree        = False,
                  **kwargs):
         super().__init__(**kwargs)
         self.supports_masking=True
@@ -40,7 +41,8 @@ class Attention(tfk.layers.Layer):
         self.return_logits       = return_logits       
         self.return_matrix       = return_matrix       
         self.headed_input        = headed_input        
-        self.headed_output       = headed_output       
+        self.headed_output       = headed_output      
+        self.scale_degree        = scale_degree 
 
 
     def get_config(self):
@@ -61,6 +63,7 @@ class Attention(tfk.layers.Layer):
             return_matrix       = self.return_matrix       ,
             headed_input        = self.headed_input        ,
             headed_output       = self.headed_output       ,
+            scale_degree        = self.scale_degree        ,
         )
         return config
     
@@ -118,7 +121,8 @@ class Attention(tfk.layers.Layer):
                                         pad               = self.pad,
                                         merge_heads       = self.merge_heads,
                                         return_logits     = self.return_logits,
-                                        return_matrix     = self.return_matrix
+                                        return_matrix     = self.return_matrix,
+                                        scale_degree      = self.scale_degree,
                                         )
         
         # Flatten heads if necessary

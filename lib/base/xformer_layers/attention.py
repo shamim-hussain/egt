@@ -41,7 +41,8 @@ def dot_product_attention(query, key, value,
                           attn_scale_factor   = None,
                           return_logits       = False,
                           return_matrix       = False,
-                          big_number          = 1e9
+                          big_number          = 1e9,
+                          scale_degree        = False,
                           ):
 
     query_shape = query.shape
@@ -139,6 +140,15 @@ def dot_product_attention(query, key, value,
         attention_matrix = attention_matrix * attn_scale_factor
     
     output = tf.matmul(attention_matrix, value)
+    
+    if (attn_scale_factor is not None) and scale_degree:
+        if mask is None:
+            degree = tf.reduce_sum(attn_scale_factor,
+                                   axis=-1, keepdims=True)
+        else:
+            degree = tf.reduce_sum(attn_scale_factor * mask,
+                                   axis=-1, keepdims=True)
+        output = output * tf.math.log(1+degree)
     
     if merge_heads is None:
         output.set_shape(query_shape[:-1]+value_shape[-1:])

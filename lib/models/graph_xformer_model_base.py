@@ -3,15 +3,13 @@ import tensorflow as tf
 from tensorflow.keras import layers, models, regularizers
 from types import SimpleNamespace
 
-from tensorflow.python.keras.backend import squeeze
-
-from ..base.xformer_layers.attention_layers import Attention
+from .egt_layers import EGT
 from ..base.track_layers import TrackedLayers, CustomLayers
 from ..base.genutil.warmup import GlobalStep
 
 from .analysis import Analysis
 
-custom_layers = CustomLayers(Attention, GlobalStep)
+custom_layers = CustomLayers(EGT, GlobalStep)
 
 
 
@@ -21,10 +19,7 @@ class GraphTransformerBase:
                  edge_width         = 32        ,
                  num_heads          = 8         ,
                  max_length         = None      ,
-                 pad_attention      = False     ,
-                 merge_heads        = None      ,
                  gate_attention     = True      ,
-                 dc_gates           = False     ,
                  model_height       = 4         ,
                  node_normalization = 'layer'   ,
                  edge_normalization = 'layer'   ,
@@ -43,16 +38,21 @@ class GraphTransformerBase:
                  node2edge_xtalk    = 0.        ,
                  edge2node_xtalk    = 0.        ,
                  global_step_layer  = False     ,
+                 scale_degree       = False     ,
+                 scaler_type        = 'log'     ,
+                 num_virtual_nodes  = 0         ,
+                 random_mask_prob   = 0.        ,
+                 attn_dropout       = 0.        ,
                  ):
+        if not gate_attention and scale_degree:
+            raise ValueError('scale_degree only works with gate_attention')
+        
         self.config = SimpleNamespace(
             model_width        = model_width        ,
             edge_width         = edge_width         ,
             num_heads          = num_heads          ,
             max_length         = max_length         ,
-            pad_attention      = pad_attention      ,
-            merge_heads        = merge_heads        ,
             gate_attention     = gate_attention     ,
-            dc_gates           = dc_gates           ,
             model_height       = model_height       ,
             node_normalization = node_normalization ,
             edge_normalization = edge_normalization ,
@@ -71,6 +71,11 @@ class GraphTransformerBase:
             node2edge_xtalk    = node2edge_xtalk    ,
             edge2node_xtalk    = edge2node_xtalk    ,
             global_step_layer  = global_step_layer  ,
+            scale_degree       = scale_degree       ,
+            num_virtual_nodes  = num_virtual_nodes  ,
+            random_mask_prob   = random_mask_prob   ,
+            scaler_type        = scaler_type        ,
+            attn_dropout       = attn_dropout       ,
         )
         self.tracked_layers = TrackedLayers(custom_layers, layers)
 
@@ -105,34 +110,26 @@ class GraphTransformerBase:
             
             all_node_repr[tag] = h
             
-            h = layers.Dense(config.model_width*3, name=f'dense_qkv_{tag}',
-                             kernel_regularizer=l2reg)(h)
-            
-            if (gates is not None) and config.dc_gates:
-                g_e = gates
-                g_h = layers.Dense(config.num_heads*2, name=f'dense_node_gates_{tag}',
-                                   kernel_regularizer=l2reg)(h)
-                nh_t = config.num_heads
-                g = layers.Lambda(lambda ee_hh: ee_hh[0] + ee_hh[1][:,:,None,:nh_t] + ee_hh[1][:,None,:,nh_t:],
-                                  name=f'add_node_edge_gates_{tag}')([g_e,g_h])
-                gates = layers.Activation('sigmoid', name=f'gate_sigmoid_{tag}')(g)
+            qkv = layers.Dense(config.model_width*3, name=f'dense_qkv_{tag}',
+                               kernel_regularizer=l2reg)(h)
             
             with layers.namespace(f'mha'):
-                h, e, mat = layers.Attention(num_heads        = config.num_heads,
-                                            pad               = config.pad_attention,
-                                            merge_heads       = config.merge_heads,
-                                            attn_mask         = (edge_mask is not None),
-                                            logits_bias       = (self.config.edge_channel_type != 'none'),
-                                            return_logits     = True,
-                                            clip_logits_value = config.clip_logits_value,
-                                            attention_scaler  = (gates is not None),
-                                            return_matrix     = True,
-                                            name              = f'mha_{tag}'
-                                            )([h] +
-                                            ( [edge_mask] if edge_mask is not None                   else [] )+
-                                            ( [e]         if self.config.edge_channel_type != 'none' else [] )+
-                                            ( [gates]     if gates is not None                       else [] ))
-    
+                h, e, mat = layers.EGT(num_heads         = config.num_heads,
+                                       clip_logits_value = config.clip_logits_value,
+                                       scale_degree      = config.scale_degree,
+                                       edge_input        = (self.config.edge_channel_type != 'none'),
+                                       gate_input        = (gates is not None),
+                                       attn_mask         = (edge_mask is not None),
+                                       name              = f'mha_{tag}',
+                                       num_virtual_nodes = config.num_virtual_nodes,
+                                       random_mask_prob  = config.random_mask_prob,
+                                       attn_dropout      = config.attn_dropout,
+                                       scaler_type       = config.scaler_type,
+                                       )([qkv] +
+                                       ( [e]         if self.config.edge_channel_type != 'none' else [] )+
+                                       ( [gates]     if gates is not None                       else [] )+
+                                       ( [edge_mask] if edge_mask is not None                   else [] ))   
+        
                 # Analysis
                 self.analysis.add_analysis(f'mha_{tag}', e=e, mat=mat)
             
@@ -177,18 +174,10 @@ class GraphTransformerBase:
             e0 = e
             gates = None
             if config.gate_attention:
-                if config.merge_heads is None:
-                    gates = layers.Dense(config.num_heads,
-                                         activation='sigmoid',
-                                         name=f'attention_gates_{tag}',
-                                         kernel_regularizer=l2reg)(e)
-                else:
-                    gates = layers.Dense(1,
-                                         activation='sigmoid',
-                                         name=f'attention_gates_{tag}',
-                                         kernel_regularizer=l2reg)(e)
-                    gates = layers.Lambda(lambda tensor: tf.squeeze(tensor, axis=-1),
-                                          name=f'squeeze_gates_{tag}')(gates)
+                gates = layers.Dense(config.num_heads,
+                                     activation=None,
+                                     name=f'attention_gates_{tag}',
+                                     kernel_regularizer=l2reg)(e)
                 # Analysis
                 self.analysis.add_analysis(f'attention_gates_{tag}', gates=gates)
             
@@ -209,23 +198,10 @@ class GraphTransformerBase:
 
             gates = None
             if config.gate_attention:
-                if config.merge_heads is None:
-                    if not config.dc_gates:
-                        gates = layers.Dense(config.num_heads,
-                                            activation='sigmoid',
-                                            name=f'attention_gates_{tag}',
-                                            kernel_regularizer=l2reg)(e)
-                    else:
-                        gates = layers.Dense(config.num_heads,
-                                            name=f'dense_edge_gates_{tag}',
-                                            kernel_regularizer=l2reg)(e)
-                else:
-                    gates = layers.Dense(1,
-                                         activation='sigmoid',
-                                         name=f'attention_gates_{tag}',
-                                         kernel_regularizer=l2reg)(e)
-                    gates = layers.Lambda(lambda tensor: tf.squeeze(tensor, axis=-1),
-                                          name=f'squeeze_gates_{tag}')(gates)
+                gates = layers.Dense(config.num_heads,
+                                     activation=None,
+                                     name=f'attention_gates_{tag}',
+                                     kernel_regularizer=l2reg)(e)
                 # Analysis
                 self.analysis.add_analysis(f'attention_gates_{tag}', gates=gates)
             
