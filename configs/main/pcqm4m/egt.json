@@ -20,5 +20,6 @@
 	"total_steps": 1000000,
 	"dropout": 0.1,
 	"edge_dropout": 0.0,
+	"random_mask_prob": 0.1,
 	"model_name": "egt"
 }

@@ -15,5 +15,6 @@
 	"use_svd": true,
     "sel_svd_features": 8,
     "random_neg": true,
+	"random_mask_prob": 0.1,
 	"model_name": "egt_spe_500k"
 }

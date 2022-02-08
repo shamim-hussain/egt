@@ -17,5 +17,6 @@
     "random_neg": true,
 	"distance_loss": 0.05,
 	"distance_target": 3,
+	"random_mask_prob": 0.1,
 	"model_name": "egt_spe_do_100k"
 }

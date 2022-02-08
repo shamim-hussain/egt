@@ -21,5 +21,6 @@
 	"dropout": 0.1,
 	"edge_dropout": 0.0,
 	"edge_channel_type": "bias",
+	"random_mask_prob": 0.1,
 	"model_name": "egt_simple"
 }

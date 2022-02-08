@@ -14,5 +14,6 @@
 	"ffn_multiplier": 2.0,
 	"use_svd": false,
 	"edge_channel_type": "bias",
+	"random_mask_prob": 0.1,
 	"model_name": "egt_simple_500k"
 }

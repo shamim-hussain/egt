@@ -14,5 +14,6 @@
 	"ffn_multiplier": 2.0,
 	"gate_attention": false,
 	"use_svd": false,
+	"random_mask_prob": 0.1,
 	"model_name": "egt_u_100k"
 }

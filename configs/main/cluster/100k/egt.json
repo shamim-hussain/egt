@@ -13,5 +13,6 @@
 	"num_heads": 8,
 	"ffn_multiplier": 2.0,
 	"use_svd": false,
+	"random_mask_prob": 0.1,
 	"model_name": "egt_100k"
 }

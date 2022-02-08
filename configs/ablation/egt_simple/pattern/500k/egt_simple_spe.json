@@ -16,5 +16,6 @@
     "sel_svd_features": 8,
     "random_neg": true,
 	"edge_channel_type": "bias",
+	"random_mask_prob": 0.1,
 	"model_name": "egt_simple_spe_500k"
 }
