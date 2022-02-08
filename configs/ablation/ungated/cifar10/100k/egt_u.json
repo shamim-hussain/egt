@@ -15,5 +15,6 @@
 	"gate_attention": false,
 	"use_svd": false,
 	"random_mask_prob": 0.1,
+    "upto_hop": 16,
 	"model_name": "egt_u_100k"
 }

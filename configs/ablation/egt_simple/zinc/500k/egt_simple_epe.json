@@ -16,5 +16,6 @@
     "sel_eig_features": 8,
 	"edge_channel_type": "bias",
 	"random_mask_prob": 0.1,
+    "upto_hop": 16,
 	"model_name": "egt_simple_epe_500k"
 }

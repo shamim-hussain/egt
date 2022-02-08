@@ -15,5 +15,6 @@
 	"use_eig": true,
     "sel_eig_features": 2,
 	"random_mask_prob": 0.1,
+    "upto_hop": 16,
 	"model_name": "egt_epe_500k"
 }
