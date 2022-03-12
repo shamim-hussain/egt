@@ -76,7 +76,7 @@ class EGT(keras.layers.Layer):
         Q,K,V = tf.unstack(QKV, num=3, axis=2)  # b,l,d,h
         
         # form attention logits from nodes
-        A_hat = tf.einsum('bldh,bmdh->blmh', Q, K) # b,l,l,h
+        A_hat = tf.einsum('bldh,bmdh->blmh', Q, K) * (dot_dim ** -0.5) # b,l,l,h
         A_hat.set_shape([QKV_shape[0], QKV_shape[1], QKV_shape[1], self.num_heads])
         if self.clip_logits_value is not None:
             A_hat = tf.clip_by_value(A_hat, self.clip_logits_value[0], self.clip_logits_value[1])
@@ -164,7 +164,7 @@ class EGT(keras.layers.Layer):
         Q,K,V = tf.unstack(QKV, num=3, axis=2)  # b,l,d,h
         
         # form attention logits from nodes
-        A_hat = tf.einsum('bldh,bmdh->blmh', Q, K) # b,l,l,h
+        A_hat = tf.einsum('bldh,bmdh->blmh', Q, K)  * (dot_dim ** -0.5) # b,l,l,h
         A_hat.set_shape([QKV_shape[0], QKV_shape[1], QKV_shape[1], self.num_heads])
         if self.clip_logits_value is not None:
             A_hat = tf.clip_by_value(A_hat, self.clip_logits_value[0], self.clip_logits_value[1])
