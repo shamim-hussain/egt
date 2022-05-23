@@ -3,6 +3,7 @@
 
 ## News
 
+* 05/18/2022 - Our paper "Global Convolution as a Replacement for Graph Convolution" has been accepted at [KDD'22](https://kdd.org/kdd2022/). The preprint at arXiv will be updated soon with the latest version of the paper.
 * 02/10/2022 - Updated results on the GNN benchmarking datasets by [Dwivedi et al.](https://arxiv.org/abs/2003.00982).
 * 02/08/2022 - A new simplified tensorflow implementation which supports random masking, attention dropout and centrality scalers. For PCQM4M datasets please view the PyTorch implementation at: https://github.com/shamim-hussain/egt_pytorch.
 * 01/26/2022 - The **PyTorch** implementation of EGT is now available at: https://github.com/shamim-hussain/egt_pytorch. The results and hyperparameters for PCQM4M, PCQM4Mv2, OGBG-MolPCBA, OGBG-MolHIV are also available.
