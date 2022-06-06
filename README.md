@@ -3,6 +3,7 @@
 
 ## News
 
+* 06/05/2022 - The accepted prerprint our paper in KDD '22 is now available on arXiv. It includes discussions on dynamic centrality scalers, random masking, attention dropout and other details about the latest experiments and results. Note that the title is changed to **"Global Self-Attention as a Replacement for Graph Convolution"**.
 * 05/18/2022 - Our paper "Global Self-Attention as a Replacement for Graph Convolution" has been accepted at [KDD'22](https://kdd.org/kdd2022/). The preprint at arXiv will be updated soon with the latest version of the paper.
 * 02/10/2022 - Updated results on the GNN benchmarking datasets by [Dwivedi et al.](https://arxiv.org/abs/2003.00982).
 * 02/08/2022 - A new simplified tensorflow implementation which supports random masking, attention dropout and centrality scalers. For PCQM4M datasets please view the PyTorch implementation at: https://github.com/shamim-hussain/egt_pytorch.
@@ -146,8 +147,8 @@ The Anaconda environment in which our experiments were conducted is specified in
 
 Please cite the following paper if you find the code useful:
 ```
-@article{hussain2021edge,
-  title={Edge-augmented Graph Transformers: Global Self-attention is Enough for Graphs},
+@article{hussain2021global,
+  title={Global Self-Attention as a Replacement for Graph Convolution},
   author={Hussain, Md Shamim and Zaki, Mohammed J and Subramanian, Dharmashankar},
   journal={arXiv preprint arXiv:2108.03348},
   year={2021}
